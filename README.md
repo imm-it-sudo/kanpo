@@ -44,15 +44,33 @@ The app will automatically reload if you make any changes to the code.
 
 ---
 
-### (Optional) Building for Production Hosting
+## How to Deploy to GitHub Pages (for Testing & Sharing)
 
-If you want to create a static version of the site that can be hosted on any web server (like your Synology NAS Web Station), you can "build" the project.
+GitHub Pages allows you to host your web app for free, directly from your repository. This is a great way to test it live and share it with others.
 
-1.  Run the build command:
-    ```bash
-    npm run build
-    ```
-2.  This will create a new folder called `dist` in your project directory.
-3.  You can then take all the files inside the `dist` folder and upload them to your web server's root directory. The main file your server should serve is `index.html` from within that folder.
+### Step 1: Configure Your Project
 
-This is the best way to host the application for others to use from a single, central server.
+Before you deploy for the first time, you need to tell the project your specific GitHub information.
+
+1.  **Open `vite.config.ts`**: Change the `base` property from `'/your-repository-name/'` to match your repository's name. For example, if your repository URL is `github.com/my-user/ocr-app`, you would change it to `base: '/ocr-app/'`.
+2.  **(Optional) Open `package.json`**: Change the `homepage` URL to your live GitHub Pages URL (e.g., `"https://my-user.github.io/ocr-app"`).
+
+### Step 2: Deploy the Application
+
+Open your terminal in the project folder and run the following command:
+
+```bash
+npm run deploy
+```
+
+This command will first build your application into a `dist` folder, and then it will push that folder's contents to a special branch in your repository called `gh-pages`.
+
+### Step 3: Configure GitHub Repository Settings
+
+1.  Go to your repository page on GitHub.
+2.  Click on the **"Settings"** tab.
+3.  In the left sidebar, click on **"Pages"**.
+4.  Under the "Build and deployment" section, for the **Source**, select **"Deploy from a branch"**.
+5.  In the branch dropdown that appears, select the **`gh-pages`** branch and leave the folder as `/ (root)`. Click **"Save"**.
+
+GitHub will now publish your site. It might take a minute or two. Once it's ready, the page will refresh and show you the public URL for your live web app. You can now use this URL to test your app and share it with anyone
