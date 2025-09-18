@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://your-github-username.github.io/your-repository-name",
+  "homepage": "https://imm-it-sudo.github.io/kanpo",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
