@@ -1,11 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
-export async function extractDataFromImage(apiKey: string, base64Image: string, mimeType: string, customPrompt: string): Promise<Record<string, string | null>> {
-  if (!apiKey) {
-    throw new Error("Gemini API Key is not provided.");
-  }
-  
-  const ai = new GoogleGenAI({ apiKey });
+export async function extractDataFromImage(base64Image: string, mimeType: string, customPrompt: string): Promise<Record<string, string | null>> {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const imagePart = {

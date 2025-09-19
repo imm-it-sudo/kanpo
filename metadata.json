@@ -1,5 +1,5 @@
 {
-  "name": "Gemini OCR Data Extractor",
+  "name": "Github Page-Gemini OCR Data Extractor",
   "description": "An application to upload an image, use Gemini API for OCR based on a custom prompt to extract structured data, and save the results locally. Users can download the collected data as a CSV file.",
   "requestFramePermissions": []
 }
