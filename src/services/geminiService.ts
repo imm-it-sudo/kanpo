@@ -15,9 +15,15 @@ export async function extractDataFromImage(apiKey: string, base64Image: string, 
       },
     };
 
+    // This text part is crucial. It tells the model what to DO with the image.
+    const textPart = {
+      text: "Extract structured data from the image based on the provided instructions."
+    };
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: { parts: [imagePart] },
+      // A multimodal prompt requires both the image and the text instruction.
+      contents: { parts: [imagePart, textPart] },
       config: {
         systemInstruction: customPrompt,
         responseMimeType: "application/json",
@@ -32,6 +38,12 @@ export async function extractDataFromImage(apiKey: string, base64Image: string, 
       throw new Error("The API returned an empty response. The image might be unclear or contain no text.");
     }
 
+    // A simple guard to ensure the response is a JSON string before parsing
+    if (!jsonString.startsWith('{') && !jsonString.startsWith('[')) {
+      console.error("Received non-JSON response from API:", jsonString);
+      throw new Error("The API did not return a valid JSON format. Please check your prompt and the image content.");
+    }
+    
     const parsedJson = JSON.parse(jsonString);
     return parsedJson as Record<string, string | null>;
 
