@@ -24,6 +24,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ prompt, onPromptChan
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
+    // Sync with parent prop if it changes
     setCurrentPrompt(prompt);
   }, [prompt]);
 
@@ -36,10 +37,12 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ prompt, onPromptChan
       clearTimeout(timeoutRef.current);
     }
 
+    // Debounce saving to avoid excessive updates
     timeoutRef.current = window.setTimeout(() => {
       onPromptChange(newText);
       setSaveStatus('saved');
       
+      // Reset status to idle after a delay
       setTimeout(() => {
         setSaveStatus('idle');
       }, 2000);
