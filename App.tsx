@@ -7,6 +7,30 @@ import type { ExtractedData } from './types';
 import { extractDataFromImage } from './services/geminiService';
 import { fileToBase64 } from './utils/fileUtils';
 
+// A new local component to handle API Key input without creating a new file.
+interface ApiKeyInputProps {
+  apiKey: string;
+  onApiKeyChange: (key: string) => void;
+}
+const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ apiKey, onApiKeyChange }) => {
+  return (
+    <div>
+      <h2 className="text-xl font-semibold mb-2 text-white">Gemini API Key</h2>
+      <p className="text-sm text-gray-400 mb-3">
+        Your API key is stored locally in your browser and is required to process images.
+      </p>
+      <input
+        type="password"
+        value={apiKey}
+        onChange={(e) => onApiKeyChange(e.target.value)}
+        className="w-full p-3 bg-brand-dark border border-gray-600 rounded-md text-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-colors"
+        placeholder="Enter your Gemini API Key here"
+        aria-label="Gemini API Key"
+      />
+    </div>
+  );
+};
+
 const DEFAULT_PROMPT = `### Role
 You are a highly specialized data extraction AI. Your expertise is in analyzing images or text from the Japanese Official Gazette (Kanpo) and extracting structured information based on a strict set of rules known as "データAの詳細仕様" (Data A Detailed Specifications).
  
@@ -73,11 +97,17 @@ const App: React.FC = () => {
   const [processingStatus, setProcessingStatus] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
+  const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('gemini_api_key') || '');
   const [prompt, setPrompt] = useState<string>(() => localStorage.getItem('gemini_custom_prompt') || DEFAULT_PROMPT);
 
   useEffect(() => {
     localStorage.setItem('extracted_data', JSON.stringify(extractedData));
   }, [extractedData]);
+
+  const handleApiKeyChange = (key: string) => {
+    setApiKey(key);
+    localStorage.setItem('gemini_api_key', key);
+  };
 
   const handlePromptChange = (newPrompt: string) => {
     setPrompt(newPrompt);
@@ -85,6 +115,10 @@ const App: React.FC = () => {
   };
 
   const handleProcessImage = useCallback(async () => {
+    if (!apiKey) {
+      setError('Please enter your Gemini API Key first.');
+      return;
+    }
     if (imageFiles.length === 0) {
       setError('Please select one or more image files first.');
       return;
@@ -101,7 +135,7 @@ const App: React.FC = () => {
         const base64Image = await fileToBase64(file);
         const mimeType = file.type;
 
-        const result = await extractDataFromImage(base64Image, mimeType, prompt);
+        const result = await extractDataFromImage(apiKey, base64Image, mimeType, prompt);
 
         const newData: ExtractedData = {
           id: Date.now() + i, // Add index to ensure unique ID in batch
@@ -123,7 +157,7 @@ const App: React.FC = () => {
     setProcessingStatus(null);
     setImageFiles([]); // Clear selection after processing
     
-  }, [imageFiles, prompt]);
+  }, [imageFiles, prompt, apiKey]);
 
   const handleDownloadCsv = useCallback(() => {
     if (extractedData.length === 0) {
@@ -203,6 +237,9 @@ const App: React.FC = () => {
       <main className="container mx-auto p-4 md:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="flex flex-col gap-8">
+            <div className="bg-brand-gray p-6 rounded-xl shadow-lg border border-gray-700">
+              <ApiKeyInput apiKey={apiKey} onApiKeyChange={handleApiKeyChange} />
+            </div>
             <div className="bg-brand-gray p-6 rounded-xl shadow-lg border border-gray-700">
               <ImageUploader 
                 onImageSelect={setImageFiles}
