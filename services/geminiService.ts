@@ -1,11 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 
-export async function extractDataFromImage(apiKey: string, base64Image: string, mimeType: string, customPrompt: string): Promise<Record<string, string | null>> {
-  if (!apiKey) {
-    throw new Error("Gemini API Key is not provided.");
+export async function extractDataFromImage(base64Image: string, mimeType: string, customPrompt: string): Promise<Record<string, string | null>> {
+  if (!process.env.API_KEY) {
+    throw new Error("API Key is not configured. Please set the API_KEY environment variable.");
   }
   
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const imagePart = {
@@ -39,7 +39,7 @@ export async function extractDataFromImage(apiKey: string, base64Image: string, 
     console.error("Error calling Gemini API:", error);
     if (error instanceof Error) {
         if (error.message.includes("API key not valid")) {
-            throw new Error("The provided Gemini API Key is not valid. Please check it and try again.");
+            throw new Error("The configured Gemini API Key is not valid. Please check your environment configuration.");
         }
         if (error.message.includes("429")) {
             throw new Error("API rate limit exceeded. Please wait and try again.");
