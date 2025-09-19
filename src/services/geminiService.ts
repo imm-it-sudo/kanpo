@@ -33,10 +33,13 @@ export async function extractDataFromImage(apiKey: string, base64Image: string, 
       },
     });
 
-    const jsonString = response.text.trim();
-    if (!jsonString) {
+    const text = response.text;
+
+    if (!text) {
       throw new Error("The API returned an empty response. The image might be unclear or contain no text.");
     }
+    
+    const jsonString = text.trim();
 
     // A simple guard to ensure the response is a JSON string before parsing
     if (!jsonString.startsWith('{') && !jsonString.startsWith('[')) {
