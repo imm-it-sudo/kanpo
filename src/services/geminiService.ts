@@ -39,7 +39,7 @@ export async function extractDataFromImage(base64Image: string, mimeType: string
     console.error("Error calling Gemini API:", error);
     if (error instanceof Error) {
         if (error.message.includes("API key not valid")) {
-            throw new Error("The provided Gemini API Key is not valid. Please check it and try again.");
+            throw new Error("The Gemini API Key is not valid. Please check your environment configuration.");
         }
         if (error.message.includes("429")) {
             throw new Error("API rate limit exceeded. Please wait and try again.");
