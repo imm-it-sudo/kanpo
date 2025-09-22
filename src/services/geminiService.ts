@@ -5,7 +5,6 @@ export async function extractDataFromImage(apiKey: string, base64Image: string, 
     throw new Error("Gemini API Key is not provided.");
   }
   
-  // Use `new GoogleGenAI({apiKey})` as per the latest guidelines.
   const ai = new GoogleGenAI({ apiKey });
 
   try {
@@ -28,6 +27,9 @@ export async function extractDataFromImage(apiKey: string, base64Image: string, 
       config: {
         systemInstruction: customPrompt,
         responseMimeType: "application/json",
+        // Note: responseSchema is omitted to allow the model flexibility with `null` values,
+        // as the schema does not explicitly support a STRING | NULL union type.
+        // The detailed prompt is expected to be sufficient for enforcing the JSON structure.
       },
     });
 
